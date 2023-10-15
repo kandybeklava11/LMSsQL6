@@ -1,0 +1,21 @@
+CREATE FUNCTION filter_phone_numbers(operator_code INT, VARIADIC phone_numbers VARCHAR[]) RETURNS SETOF VARCHAR
+AS
+$$
+DECLARE
+    filtered_numbers VARCHAR;
+BEGIN
+    SELECT unnest(phone_numbers) INTO filtered_numbers
+    FROM unnest(phone_numbers) AS phone_number
+    WHERE phone_number LIKE '%' || operator_code || '%';
+
+    RETURN NEXT filtered_numbers;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+
+SELECT * FROM filter_phone_numbers(500, '+996(999)344554', '+996(500)412378', '+996(500)567832');
+
+
+SELECT * FROM filter_phone_numbers(500, VARIADIC ARRAY['+996(999)344554', '+996(500)412378', '+996(500)567832']);
